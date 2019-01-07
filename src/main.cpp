@@ -9,11 +9,14 @@
 #include "Eigen-3.3/Eigen/QR"
 #include "json.hpp"
 #include "spline.h"
+#include "behavior_planning.hpp"
 
 using namespace std;
 
 // for convenience
 using json = nlohmann::json;
+
+
 
 // For converting back and forth between radians and degrees.
 constexpr double pi() { return M_PI; }
@@ -202,13 +205,17 @@ int main() {
   	map_waypoints_dy.push_back(d_y);
   }
 
-  // start in lane 1.
+  // start in lane 1 (center).
+  // lane = 0 means left, but lane = 1 means right
   int lane = 1;
   
   // Have a reference velocity to target.
   double ref_vel = 0.0;
 
-  h.onMessage([&map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy, &lane, &ref_vel](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
+  BehaviorPlanning behavior_planning;
+
+
+  h.onMessage([&map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy, &lane, &ref_vel, &behavior_planning](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                      uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
@@ -249,12 +256,48 @@ int main() {
 
           	json msgJson;
 
-
-          	// TODO: define a path made up of (x,y) points that the car will visit sequentially every .02 seconds
+          	// Project previous result to ego vehicle zone.
+            /*
             if (prev_size > 0) {
               car_s = end_path_s;
             }
+            */
+            if (prev_size > 0) {
+              end_path_s = end_path_s;
+            } else {
+              end_path_s = car_s;
+            }
+              
+            // Reshape ego vehicle data into structured data
+            EgoVehicle_st ego_vehicle = {car_x, car_y, car_s, car_d, car_yaw, car_speed,
+                                         end_path_s, end_path_d, (unsigned int)lane};
 
+            vector<Vehicle_st> surr_vehicles;
+
+            // Reshape sensor fusion data into structured data
+            for (int i = 0; i < sensor_fusion.size(); i++) {
+              unsigned int tmp_vehicle_id = (unsigned int)sensor_fusion[i][0];
+              double tmp_vehicle_x = sensor_fusion[i][1];
+              double tmp_vehicle_y = sensor_fusion[i][2];
+              double tmp_vehicle_vx = sensor_fusion[i][3];
+              double tmp_vehicle_vy = sensor_fusion[i][4];
+              double tmp_vehicle_s = sensor_fusion[i][5];
+              double tmp_vehicle_d = sensor_fusion[i][6];
+              double tmp_vehicle_speed = 0.0;
+              unsigned int lane_id = 0;
+              Vehicle_st tmp_vehicle = {tmp_vehicle_id, tmp_vehicle_x, tmp_vehicle_y,
+                                        tmp_vehicle_vx, tmp_vehicle_vy, tmp_vehicle_s,
+                                        tmp_vehicle_d, tmp_vehicle_speed, lane_id};
+              surr_vehicles.push_back(tmp_vehicle);
+            }
+            
+            // Prediction for Behavior Planning.
+            vector<Vehicle_st> predictions;
+            predictions = behavior_planning.prediction(surr_vehicles, (50-prev_size));
+
+            // planning
+            
+            
             bool too_close = false;
 
             // find ref_v to use
@@ -271,7 +314,7 @@ int main() {
                 // check s value greater than mine and s gap
                 if ((check_car_s > car_s) && ((check_car_s - car_s) < 30)) {
 
-                  // Do some logic here, lower reference velocity so wedon;t crash into the car infront of us, could
+                  // Do some logic here, lower reference velocity so we don't crash into the car infront of us, could
                   // also flag to try to change lanes.
                   // ref_vel = 29.5; // mph
                   too_close = true;
@@ -280,8 +323,8 @@ int main() {
                     lane = 0;
                   }
                   
-                }
-              }
+                } // if ((check_car_s > car_s)...
+              } // if ( d < (2+4*lane+2) && d > (2+4*lane-2) )...
             }
 
             if (too_close) {
