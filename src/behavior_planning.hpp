@@ -96,8 +96,8 @@ class BehaviorPlanning {
   void planning(const EgoVehicle_st ego_vehicle,
                 const vector<Vehicle_st> predictions,
                 const double period=.02);
-  double get_expected_speed(void);
-  int get_expected_lanes(void);
+  double get_expected_speed(void) { return expected_speed; };
+  int get_expected_lane(void) { return expected_lane; };
   
 };
 

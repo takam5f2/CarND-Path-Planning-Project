@@ -296,6 +296,8 @@ int main() {
             predictions = behavior_planning.prediction(surr_vehicles, (50-prev_size));
 
             // planning
+            behavior_planning.planning(ego_vehicle, surr_vehicles, (50-prev_size)*0.02);
+
             
             
             bool too_close = false;
@@ -333,6 +335,9 @@ int main() {
             else if (ref_vel < 49.5) {
               ref_vel += .224;
             }
+
+            ref_vel = behavior_planning.get_expected_speed();
+            lane = behavior_planning.get_expected_lane();
             // Create a list of widely spaced (x, y) waypoints, evenly spaced at 30m.
             // Later we will interpolate these waypoints with a spline and fill it in with more points that control speed.
             vector<double> ptsx;

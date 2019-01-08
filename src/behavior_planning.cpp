@@ -1,4 +1,5 @@
 #include "behavior_planning.hpp"
+#include "cost_function.hpp"
 #include <algorithm>
 #include <cmath>
 #include <cassert>
@@ -48,7 +49,7 @@ void BehaviorPlanning::planning(const EgoVehicle_st ego_vehicle,
                                                         predictions, period);
     assert(traj_states.size() == trajectory.size());
     if (trajectory.size() != 0) {
-      cost = calculate_cost(ego_vehicle, predictions, trajectory);
+      cost = calculate_cost(ego_vehicle, predictions, trajectory, traj_states);
       traj_costs.push_back(cost);
       final_trajectories.push_back(trajectory);
     }
