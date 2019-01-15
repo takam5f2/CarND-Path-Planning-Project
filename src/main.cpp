@@ -5,16 +5,19 @@
 #include <iostream>
 #include <thread>
 #include <vector>
-  #include "Eigen-3.3/Eigen/Core"
-  #include "Eigen-3.3/Eigen/QR"
-  #include "json.hpp"
-  #include "spline.h"
+#include "Eigen-3.3/Eigen/Core"
+#include "Eigen-3.3/Eigen/QR"
+#include "json.hpp"
+#include "spline.h"
+#include "helper_function.hpp"
+#include "trajectory_planning.hpp"
 
-  using namespace std;
+using namespace std;
 
 // for convenience
 using json = nlohmann::json;
 
+/*
 // For converting back and forth between radians and degrees.
 constexpr double pi() { return M_PI; }
 double deg2rad(double x) { return x * pi() / 180; }
@@ -158,7 +161,7 @@ vector<double> getXY(double s, double d, const vector<double> &maps_s, const vec
 
   return {x,y};
 
-}
+  }*/
 
 int main() {
   uWS::Hub h;
@@ -203,7 +206,14 @@ int main() {
   // Reference velocity.
   double ref_vel = 0.0; // mph
 
-  h.onMessage([&ref_vel, &lane, &map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy]
+  // ego vehicle
+  EgoVehicle ego_vehicle;
+
+  Prediction prediction;
+
+  TrajectoryPlanner traj_plan;
+
+  h.onMessage([&traj_plan, &ego_vehicle, &prediction, &ref_vel, &lane, &map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy]
               (uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
 
 
@@ -246,11 +256,22 @@ int main() {
                       // Provided previous path point size.
                       int prev_size = previous_path_x.size();
 
-                      // Preventing collitions.
-                      if (prev_size > 0) {
-                        car_s = end_path_s;
-                      }
+                      // Preventing collision.
+                      // if (prev_size > 0) {
+                      // car_s = end_path_s;
+                      // }
 
+                      ego_vehicle.set_parameter(lane, ref_vel, car_x, car_y, car_speed,
+                                                car_yaw, car_d, car_s, end_path_s,
+                                                end_path_d);
+
+                      Trajectory traj = traj_plan.trajectory_planning(ego_vehicle, sensor_fusion, (double)prev_size*0.02);
+                      lane = traj.lane;
+                      ref_vel = traj.speed;
+                      cout << "ref_vel" << ref_vel << endl;
+                      cout << "lane" << lane << endl;
+                      ego_vehicle.state.set_state(traj.state);
+                      /*
                       // Prediction : Analysing other cars positions.
                       bool car_ahead = false;
                       bool car_left = false;
@@ -288,11 +309,12 @@ int main() {
                           car_righ |= car_s - 30 < check_car_s && car_s + 30 > check_car_s;
                         }
                       }
-
+                      */
                       // Behavior : Let's see what to do.
                       double speed_diff = 0;
                       const double MAX_SPEED = 49.5;
                       const double MAX_ACC = .224;
+                      /*
                       if ( car_ahead ) { // Car ahead
                         if ( !car_left && lane > 0 ) {
                           // if there is no car left and there is a left lane.
@@ -313,6 +335,7 @@ int main() {
                           speed_diff += MAX_ACC;
                         }
                       }
+                      */
 
                       vector<double> ptsx;
                       vector<double> ptsy;
