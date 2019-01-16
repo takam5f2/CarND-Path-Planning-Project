@@ -8,6 +8,7 @@
 using namespace std;
 
 // state
+/*
 enum PARA_STATE {
   STATE_LK, // lane keeping
   STATE_PLCL, // preparing lane change to left
@@ -16,7 +17,7 @@ enum PARA_STATE {
   STATE_LCR, // lane change to right lane
   STATE_INVALID // Invalid state.
 };
-
+*/
 
 class StateMachine {
 private :

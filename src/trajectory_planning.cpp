@@ -25,27 +25,28 @@ Trajectory TrajectoryPlanner::trajectory_planning(EgoVehicle ego_vehicle, vector
   bool left_exist_front = get_vehicle_front(ego_vehicle, prediction, left_lane, front_vehicle);
   bool left_exist_behind = get_vehicle_front(ego_vehicle, prediction, left_lane, front_vehicle);
 
-  if ((right_lane <= 2) && (right_exist_front & right_exist_behind)) {
+  if (right_exist_front & right_exist_behind) {
     right_exist = true;
   }
 
-  if ((left_lane >= 0) && (left_exist_front & left_exist_behind)) {
+  if (left_exist_front & left_exist_behind) {
     left_exist = true;
   }
 
   Trajectory traj = generate_lane_keep(ego_vehicle, prediction, STATE_LK);
-  Trajectory tmp_traj = traj;
-  if (ego_exist & !left_exist && (left_lane >= LANE_LEFT)) {
-      tmp_traj = generate_lane_change(ego_vehicle, prediction, STATE_LCL);
-      if (tmp_traj.state != STATE_INVALID) {
-        cout << "<< ----left lane change----" << endl;
-        traj = tmp_traj;
-      }
-  } else if (ego_exist & !right_exist && (right_lane <= LANE_RIGHT)) {
-    tmp_traj = generate_lane_change(ego_vehicle, prediction, STATE_LCR);
-    if (tmp_traj.state != STATE_INVALID) {
+  Trajectory lcl_traj = generate_lane_change(ego_vehicle, prediction, STATE_LCL);
+  Trajectory lcr_traj = generate_lane_change(ego_vehicle, prediction, STATE_LCR);
+  if (ego_exist) {
+    if (!left_exist && (lcl_traj.state != STATE_INVALID)) {
       cout << "<< ----left lane change----" << endl;
-      traj = tmp_traj;
+      traj = lcl_traj;
+    }
+    else if (!right_exist && (lcr_traj.state != STATE_INVALID)) {
+      cout << "<< ----right lane change----" << endl;
+      traj = lcr_traj;
+    }
+    else {
+      cout << " ---- lane keep ----  " << endl;
     }
   } else {
       cout << " ---- lane keep ----  " << endl;

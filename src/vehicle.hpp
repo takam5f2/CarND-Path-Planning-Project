@@ -4,12 +4,21 @@
 
 #include <vector>
 #include <cmath>
-#include "state_machine.hpp"
+
+// state
+enum PARA_STATE {
+  STATE_LK, // lane keeping
+  STATE_PLCL, // preparing lane change to left
+  STATE_PLCR, // preparing lane change to right
+  STATE_LCL, // lane change to left lane
+  STATE_LCR, // lane change to right lane
+  STATE_INVALID // Invalid state.
+};
 
 class Vehicle {
 
 public:
-  StateMachine state;
+  PARA_STATE state;
   int id;
   int current_lane;
   int next_lane;

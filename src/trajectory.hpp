@@ -1,7 +1,7 @@
 #ifndef __TRAJECTORY_HPP__
 #define __TRAJECTORY_HPP__
 
-#include "state_machine.hpp"
+#include "vehicle.hpp"
 
 class Trajectory {
 public:

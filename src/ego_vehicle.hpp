@@ -9,11 +9,7 @@ public:
   double ref_speed;
   EgoVehicle();
   virtual ~EgoVehicle();
-  void init_state(PARA_STATE given_state) { this->state.set_state(given_state); };
-  
-  vector<PARA_STATE> get_next_state_candidate(void) {
-    return this->state.get_next_state_candidate();
-  }
+  void init_state(PARA_STATE given_state) { this->state = given_state; };
   
   void set_parameter(int lane, double ref_speed,
                      double x, double y, double speed,
