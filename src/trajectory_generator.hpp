@@ -15,16 +15,10 @@ extern int LANE_LEFT;
 extern int LANE_CENTER;
 extern int LANE_RIGHT;
 
-vector<Trajectory> generate_trajectory(const EgoVehicle ego_vehicle,
-                                       const Prediction prediction);
 
 Trajectory generate_lane_keep(const EgoVehicle ego_vehicle,
                               const Prediction prediction,
                               PARA_STATE next_state);
-
-Trajectory generate_prepare_lane_change(const EgoVehicle ego_vehicle,
-                                        const Prediction prediction,
-                                        PARA_STATE next_state);
 
 Trajectory generate_lane_change(const EgoVehicle ego_vehicle,
                                 const Prediction prediction,

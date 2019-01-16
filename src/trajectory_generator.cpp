@@ -1,13 +1,12 @@
 #include "trajectory_generator.hpp"
 #include "prediction.hpp"
 
-double TARGET_SPEED = 49.0;
+// constant value;
+double TARGET_SPEED = 49.5;
 double ACCELERATION = 0.224;
 int LANE_LEFT = 0;
 int LANE_CENTER = 1;
 int LANE_RIGHT = 2;
-
-
 
 Trajectory generate_lane_keep(const EgoVehicle ego_vehicle,
                               const Prediction prediction,
@@ -18,7 +17,6 @@ Trajectory generate_lane_keep(const EgoVehicle ego_vehicle,
   vector<SurroundingVehicle> vehicles = prediction.surrounding_vehicles;
 
   SurroundingVehicle front_vehicle;
-  SurroundingVehicle behind_vehicle;
   bool front_exist = get_vehicle_front(ego_vehicle, prediction, lane, front_vehicle);
   
   Trajectory trajectory(next_state, ego_vehicle.current_lane,
@@ -31,7 +29,6 @@ Trajectory generate_lane_keep(const EgoVehicle ego_vehicle,
   }
 
   return trajectory;
-  
 }
 
 
@@ -65,7 +62,6 @@ Trajectory generate_lane_change(const EgoVehicle ego_vehicle,
 
   return trajectory;
 }
-
 
 bool get_vehicle_front(const EgoVehicle ego_vehicle,
                        const Prediction prediction,
@@ -123,4 +119,3 @@ bool get_vehicle_behind(const EgoVehicle ego_vehicle,
   }
   return behind_exist;
 }
-

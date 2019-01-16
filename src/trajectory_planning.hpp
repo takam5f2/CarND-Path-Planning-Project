@@ -11,6 +11,5 @@ public:
   ~TrajectoryPlanner();
   Trajectory trajectory_planning(EgoVehicle ego_vehicle,
                                  vector<vector<double>> sensor_fusion, double time_step);
-  double calculate_cost(EgoVehicle ego_vehicle, Prediction prediction, Trajectory trajectory);
 };
 #endif
