@@ -9,13 +9,6 @@
 
 using namespace std;
 
-extern double TARGET_SPEED;
-extern double ACCELERATION;
-extern int LANE_LEFT;
-extern int LANE_CENTER;
-extern int LANE_RIGHT;
-
-
 Trajectory generate_lane_keep(const EgoVehicle ego_vehicle,
                               const Prediction prediction,
                               PARA_STATE next_state);

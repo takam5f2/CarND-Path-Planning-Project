@@ -2,11 +2,11 @@
 #include "prediction.hpp"
 
 // constant value;
-double TARGET_SPEED = 49.5;
-double ACCELERATION = 0.224;
-int LANE_LEFT = 0;
-int LANE_CENTER = 1;
-int LANE_RIGHT = 2;
+const double TARGET_SPEED = 49.5;
+const double ACCELERATION = 0.224;
+const int LANE_LEFT = 0;
+const int LANE_CENTER = 1;
+const int LANE_RIGHT = 2;
 
 Trajectory generate_lane_keep(const EgoVehicle ego_vehicle,
                               const Prediction prediction,
