@@ -1,4 +1,4 @@
-#include "trajectory_generator.hpp"
+#include "behavior_generator.hpp"
 #include "prediction.hpp"
 
 // constant value;
@@ -8,7 +8,7 @@ const int LANE_LEFT = 0;
 const int LANE_CENTER = 1;
 const int LANE_RIGHT = 2;
 
-Trajectory generate_lane_keep(const EgoVehicle ego_vehicle,
+Behavior generate_lane_keep(const EgoVehicle ego_vehicle,
                               const Prediction prediction,
                               PARA_STATE next_state) {
   int lane = ego_vehicle.current_lane;
@@ -19,25 +19,25 @@ Trajectory generate_lane_keep(const EgoVehicle ego_vehicle,
   SurroundingVehicle front_vehicle;
   bool front_exist = get_vehicle_front(ego_vehicle, prediction, lane, front_vehicle);
   
-  Trajectory trajectory(next_state, ego_vehicle.current_lane,
+  Behavior behavior(next_state, ego_vehicle.current_lane,
                         ego_vehicle.speed, ego_vehicle.s, ego_vehicle.d);
 
   if (front_exist) {
-    trajectory.speed = ego_vehicle.ref_speed - ACCELERATION;
+    behavior.speed = ego_vehicle.ref_speed - ACCELERATION;
   } else if (ego_vehicle.ref_speed < TARGET_SPEED) {
-    trajectory.speed = ego_vehicle.ref_speed + ACCELERATION;
+    behavior.speed = ego_vehicle.ref_speed + ACCELERATION;
   }
 
-  return trajectory;
+  return behavior;
 }
 
 
-Trajectory generate_lane_change(const EgoVehicle ego_vehicle,
+Behavior generate_lane_change(const EgoVehicle ego_vehicle,
                                 const Prediction prediction,
                                 PARA_STATE next_state) {
   int lane = ego_vehicle.current_lane;
   int next_lane = lane;
-  Trajectory trajectory(next_state, ego_vehicle.current_lane,
+  Behavior behavior(next_state, ego_vehicle.current_lane,
                         ego_vehicle.speed, ego_vehicle.s, ego_vehicle.d);
 
 
@@ -53,14 +53,14 @@ Trajectory generate_lane_change(const EgoVehicle ego_vehicle,
   }
 
   if (next_lane < LANE_LEFT || next_lane > LANE_RIGHT) {
-    // lane does not exist, and so does new trajectory
-    trajectory.state = STATE_INVALID;
-    return trajectory;
+    // lane does not exist, and so does new behavior
+    behavior.state = STATE_INVALID;
+    return behavior;
   }
-  trajectory.lane = next_lane;
-  trajectory.speed = ego_vehicle.ref_speed - ACCELERATION;
+  behavior.lane = next_lane;
+  behavior.speed = ego_vehicle.ref_speed - ACCELERATION;
 
-  return trajectory;
+  return behavior;
 }
 
 bool get_vehicle_front(const EgoVehicle ego_vehicle,

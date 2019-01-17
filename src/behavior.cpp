@@ -1,6 +1,6 @@
-#include "trajectory.hpp"
+#include "behavior.hpp"
 
-Trajectory::Trajectory (PARA_STATE _state, int _lane, double _speed,
+Behavior::Behavior (PARA_STATE _state, int _lane, double _speed,
              double _next_s, double _next_d)
     :state(_state),
      lane(_lane),
@@ -9,5 +9,5 @@ Trajectory::Trajectory (PARA_STATE _state, int _lane, double _speed,
      next_d(_next_d)
   {}
   
-Trajectory::~Trajectory(){}
+Behavior::~Behavior(){}
 

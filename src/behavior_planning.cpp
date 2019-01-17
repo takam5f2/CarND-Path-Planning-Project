@@ -1,9 +1,9 @@
-#include "trajectory_planning.hpp"
+#include "behavior_planning.hpp"
 
-TrajectoryPlanner::TrajectoryPlanner() {}
-TrajectoryPlanner::~TrajectoryPlanner() {}
+BehaviorPlanner::BehaviorPlanner() {}
+BehaviorPlanner::~BehaviorPlanner() {}
 
-Trajectory TrajectoryPlanner::trajectory_planning(EgoVehicle ego_vehicle, vector<vector<double>> sensor_fusion,
+Behavior BehaviorPlanner::behavior_planning(EgoVehicle ego_vehicle, vector<vector<double>> sensor_fusion,
                                double time_step) {
 
   Prediction prediction;
@@ -33,9 +33,9 @@ Trajectory TrajectoryPlanner::trajectory_planning(EgoVehicle ego_vehicle, vector
     left_exist = true;
   }
 
-  Trajectory traj = generate_lane_keep(ego_vehicle, prediction, STATE_LK);
-  Trajectory lcl_traj = generate_lane_change(ego_vehicle, prediction, STATE_LCL);
-  Trajectory lcr_traj = generate_lane_change(ego_vehicle, prediction, STATE_LCR);
+  Behavior traj = generate_lane_keep(ego_vehicle, prediction, STATE_LK);
+  Behavior lcl_traj = generate_lane_change(ego_vehicle, prediction, STATE_LCL);
+  Behavior lcr_traj = generate_lane_change(ego_vehicle, prediction, STATE_LCR);
   if (ego_exist) {
     if (!left_exist && (lcl_traj.state != STATE_INVALID)) {
       cout << "<< ----left lane change----" << endl;

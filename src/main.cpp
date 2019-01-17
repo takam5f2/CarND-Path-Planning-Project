@@ -10,7 +10,7 @@
 #include "json.hpp"
 #include "spline.h"
 #include "helper_function.hpp"
-#include "trajectory_planning.hpp"
+#include "behavior_planning.hpp"
 
 using namespace std;
 
@@ -67,7 +67,7 @@ int main() {
 
   Prediction prediction;
 
-  TrajectoryPlanner traj_plan;
+  BehaviorPlanner traj_plan;
 
   h.onMessage([&traj_plan, &ego_vehicle, &prediction, &ref_vel, &lane, &map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy]
               (uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
@@ -121,7 +121,7 @@ int main() {
                                                 car_yaw, car_d, car_s, end_path_s,
                                                 end_path_d);
 
-                      Trajectory traj = traj_plan.trajectory_planning(ego_vehicle, sensor_fusion, (double)prev_size*0.02);
+                      Behavior traj = traj_plan.behavior_planning(ego_vehicle, sensor_fusion, (double)prev_size*0.02);
                       lane = traj.lane;
                       ref_vel = traj.speed;
                       cout << "ref_vel" << ref_vel << endl;
